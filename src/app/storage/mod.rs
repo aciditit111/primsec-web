@@ -80,7 +80,7 @@ pub struct StorageRolePermissions {
 impl Default for StorageRolePermissions {
     fn default() -> Self {
         Self {
-            allow_add_hosts: true,
+            allow_add_hosts: false, // PrimSec: телефоны не добавляют свои хосты
             maximum_bitrate_kbps: None,
             allow_codec_h264: true,
             allow_codec_h265: true,

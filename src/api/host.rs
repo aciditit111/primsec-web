@@ -207,6 +207,11 @@ pub async fn cancel_host(
     mut user: AuthenticatedUser,
     Json(request): Json<PostCancelRequest>,
 ) -> Result<Json<PostCancelResponse>, AppError> {
+    // PrimSec: «закрыть приложение» на хосте закрывает ВСЕ сеансы движка
+    // приёма (и гостей с компьютеров) — только служебному входу.
+    if !matches!(user.role().await?.ty().await?, RoleType::Admin) {
+        return Err(AppError::Forbidden);
+    }
     let host_id = HostId(request.host_id);
 
     let mut host = user.host(host_id).await?;

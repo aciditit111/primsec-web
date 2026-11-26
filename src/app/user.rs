@@ -335,7 +335,8 @@ impl AuthenticatedUser {
 
     pub async fn host_add(&mut self, address: String, http_port: u16) -> Result<Host, AppError> {
         let mut role = self.role().await?;
-        if !role.permissions().await?.allow_add_hosts {
+        // PrimSec: администратор (служебный вход PrimSec) добавляет всегда.
+        if !matches!(role.ty().await?, RoleType::Admin) && !role.permissions().await?.allow_add_hosts {
             return Err(AppError::Forbidden);
         }
 
