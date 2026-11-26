@@ -1,4 +1,4 @@
-import { Api, apiGetRole, getApi } from "./api"
+import { Api, apiGetHost, apiGetRole, getApi } from "./api"
 import { DetailedRole, StreamKeys } from "./api_bindings"
 import { Component } from "./component/index"
 import { SelectComponent } from "./component/input"
@@ -22,6 +22,7 @@ import { NativeScreenKeyboard } from "./keyboard/native_keyboard"
 import { SimulatedKeyboard } from "./keyboard/simulated_keyboard"
 import { buildUrl } from "./config_"
 import { VirtualGamepad } from "./stream/virtual_gamepad"
+import { ConnectOverlay, FloatingButton, ICONS, MenuItem, ViewZoom, ViewMode, lsGet, lsSet, showGestureHintOnce } from "./stream/primsec_ui"
 
 let I = getTranslations(getCurrentLanguage())
 
@@ -172,6 +173,10 @@ class ViewerApp implements Component {
     private stream: Stream
     // PrimSec: экранный геймпад
     private virtualPad: VirtualGamepad = new VirtualGamepad(() => this.stream.getInput())
+    // PrimSec: заставка подключения, масштаб картинки, плавающая кнопка
+    private connectOverlay = new ConnectOverlay("")
+    private viewZoom = new ViewZoom(() => this.getStreamRect(), () => this.stream.getInput().getLocalCursorState())
+    private fab: FloatingButton = new FloatingButton([], () => this.stream.psConnectionText())
 
     private inputConfig: StreamInputConfig = defaultStreamInputConfig()
     private previousMouseMode: MouseMode
@@ -200,6 +205,13 @@ class ViewerApp implements Component {
                 ...options?.videoSizeCustom,
             },
         }
+        // PrimSec: качество и режим пальца — из меню телефона.
+        const quality = lsGet("psQuality") || "balance"
+        if (quality == "smooth") { settings.bitrate = 5000; settings.videoSize = "720p" }
+        else if (quality == "sharp") { settings.bitrate = 15000; settings.videoSize = "1080p" }
+        else { settings.bitrate = 8000; settings.videoSize = "1080p" }
+        const touch = lsGet("psTouch")
+        if (touch == "localCursor" || touch == "pointAndDrag") settings.touchMode = touch
         Object.assign(this.inputConfig, {
             mouseMode: settings.mouseMode,
             mouseScrollMode: settings.mouseScrollMode,
@@ -210,7 +222,8 @@ class ViewerApp implements Component {
 
         // Configure sidebar
         this.sidebar = new ViewerSidebar(this)
-        setSidebar(this.sidebar)
+        // PrimSec: вместо боковой панели — плавающая кнопка с меню.
+        setSidebar(null)
 
         // Configure stats element
         this.statsDiv.hidden = true
@@ -233,6 +246,9 @@ class ViewerApp implements Component {
         this.div.appendChild(this.statsDiv)
         this.div.appendChild(this.localTouchCursorDiv)
         this.div.appendChild(this.virtualPad.getElement())
+        this.div.appendChild(this.connectOverlay.getElement())
+        for (const e of this.fab.getElements()) this.div.appendChild(e)
+        apiGetHost(api, { host_id: hostId }).then(h => this.connectOverlay.setPcName(h.name)).catch(() => { })
 
         // Configure Screen Keyboard
         if (likelyHasNativeOnScreenKeyboard()) {
@@ -255,6 +271,8 @@ class ViewerApp implements Component {
 
         this.stream = new Stream(this.api, hostId, appId, settings, [browserWidth, browserHeight], bootstrapRole.permissions)
         this.startStream(settings)
+        this.fab.setItems(this.buildMenu())
+        showGestureHintOnce(this.div)
 
         // Configure input
         this.addListeners(document)
@@ -317,9 +335,8 @@ class ViewerApp implements Component {
         this.stream.addInfoListener(this.onInfo.bind(this))
 
         // Create connection info modal
-        const connectionInfoListener = this.connectionInfoModal.onInfo.bind(this.connectionInfoModal)
-        this.stream.addInfoListener(connectionInfoListener)
-        showModal(this.connectionInfoModal)
+        // PrimSec: своя заставка вместо окна с журналом движка.
+        this.stream.addInfoListener(this.connectOverlay.onInfo.bind(this.connectOverlay))
 
         // Start animation frame loop
         this.onTouchUpdate()
@@ -347,16 +364,11 @@ class ViewerApp implements Component {
 
             this.armFullscreenOnNextInteraction()
         } else if (data.type == "streamEnded") {
+            // PrimSec: итог — на своей заставке, с «Повторить» и «К компьютерам».
             if (data.graceful) {
-                await showMessage(data.message ?? "Трансляция завершена")
-
-                exitStreamPage()
+                this.connectOverlay.ended(data.message ?? "Компьютер завершил трансляцию")
             } else {
-                // This dispatches a log line as fatal
-                const event: InfoEvent = new CustomEvent("stream-info", {
-                    detail: { type: "addDebugLine", line: data.message ?? "Связь с компьютером оборвалась", additional: { type: "fatal" } }
-                })
-                this.connectionInfoModal.onInfo(event)
+                this.connectOverlay.fail(data.message ?? "Связь с компьютером оборвалась")
             }
         }
     }
@@ -594,6 +606,7 @@ class ViewerApp implements Component {
 
         this.stream.getInput().onTouchUpdate(this.getStreamRect())
         this.updateVideoOffset()
+        this.viewZoom.apply()
         this.renderLocalTouchCursor()
     }
     onTouchMove(event: TouchEvent) {
@@ -678,6 +691,115 @@ class ViewerApp implements Component {
     }
     getVirtualPad(): VirtualGamepad {
         return this.virtualPad
+    }
+
+    // ---------- PrimSec: меню плавающей кнопки ----------
+
+    private buildMenu(): MenuItem[] {
+        const close = () => this.fab.setOpen(false)
+        return [
+            {
+                id: "keyboard", label: "Клавиатура", icon: ICONS.keyboard,
+                onClick: () => { close(); this.screenKeyboard.setVisible(true) },
+            },
+            {
+                id: "touch",
+                label: this.inputConfig.touchMode == "pointAndDrag" ? "Касание" : "Тачпад",
+                icon: ICONS.touch,
+                onClick: () => {
+                    const next = this.inputConfig.touchMode == "pointAndDrag" ? "localCursor" : "pointAndDrag"
+                    lsSet("psTouch", next)
+                    this.setInputConfig({ ...this.inputConfig, touchMode: next })
+                    this.fab.setItems(this.buildMenu())
+                },
+            },
+            {
+                id: "pad", label: "Геймпад", icon: ICONS.pad,
+                active: () => this.virtualPad.isVisible(),
+                onClick: () => { this.virtualPad.setVisible(!this.virtualPad.isVisible()); close() },
+            },
+            {
+                id: "screen", label: "Экран", icon: ICONS.screen,
+                onClick: () => this.showScreenSheet(),
+            },
+            {
+                id: "keys", label: "Клавиши", icon: ICONS.keys,
+                onClick: () => this.showKeysSheet(),
+            },
+            {
+                id: "quality", label: "Качество", icon: ICONS.quality,
+                onClick: () => this.showQualitySheet(),
+            },
+            {
+                id: "apps", label: "Приложения", icon: ICONS.apps,
+                onClick: async () => {
+                    close()
+                    try { await this.stream.stop() } catch { /* уже закрыт */ }
+                    window.location.href = buildUrl("/?apps=1")
+                },
+            },
+            {
+                id: "off", label: "Отключиться", icon: ICONS.off,
+                onClick: async () => {
+                    close()
+                    try { await this.stream.stop() } catch { /* уже закрыт */ }
+                    window.location.href = "/"
+                },
+            },
+        ]
+    }
+
+    private showScreenSheet() {
+        const mode = this.viewZoom.getMode()
+        const pick = (m: ViewMode) => () => { this.viewZoom.setMode(m); this.fab.setOpen(false) }
+        this.fab.showSheet("Экран", [
+            { label: "Целиком", sub: "Весь экран компьютера, по краям могут быть полосы", on: mode == "fit", onClick: pick("fit") },
+            { label: "Во весь экран", sub: "Без полос, края чуть обрезаны — картинка едет за курсором", on: mode == "fill", onClick: pick("fill") },
+            { label: "Крупно", sub: "Для мелкого текста — картинка едет за курсором", on: mode == "zoom", onClick: pick("zoom") },
+        ])
+    }
+
+    private showQualitySheet() {
+        const q = lsGet("psQuality") || "balance"
+        const pick = (v: string) => () => { lsSet("psQuality", v); location.reload() }
+        this.fab.showSheet("Качество", [
+            { label: "Плавно", sub: "720p — для слабого мобильного интернета", on: q == "smooth", onClick: pick("smooth") },
+            { label: "Баланс", sub: "1080p — обычный выбор", on: q == "balance", onClick: pick("balance") },
+            { label: "Чётко", sub: "1080p, больше деталей — для хорошего Wi-Fi", on: q == "sharp", onClick: pick("sharp") },
+        ])
+    }
+
+    private showKeysSheet() {
+        // Коды клавиш Windows (VK_*): Win 0x5B, Esc 0x1B, Enter 0x0D, Tab 0x09,
+        // Alt 0x12, Ctrl 0x11, Shift 0x10, Delete 0x2E, F4 0x73, C 0x43, V 0x56.
+        const combo = (keys: number[]) => () => {
+            const input = this.stream.getInput()
+            const mods = emptyKeyModifiers()
+            for (const k of keys) {
+                if (k == 0x11) mods.ctrl = true
+                if (k == 0x12) mods.alt = true
+                if (k == 0x10) mods.shift = true
+                if (k == 0x5B) mods.meta = true
+                input.sendKey(true, k, { ...mods })
+            }
+            for (const k of [...keys].reverse()) {
+                input.sendKey(false, k, { ...mods })
+                if (k == 0x11) mods.ctrl = false
+                if (k == 0x12) mods.alt = false
+                if (k == 0x10) mods.shift = false
+                if (k == 0x5B) mods.meta = false
+            }
+        }
+        this.fab.showSheet("Клавиши", [
+            { label: "Win", sub: "Меню «Пуск»", onClick: combo([0x5B]) },
+            { label: "Esc", onClick: combo([0x1B]) },
+            { label: "Enter", onClick: combo([0x0D]) },
+            { label: "Alt + Tab", sub: "Переключить окно", onClick: combo([0x12, 0x09]) },
+            { label: "Alt + F4", sub: "Закрыть окно", onClick: combo([0x12, 0x73]) },
+            { label: "Ctrl + C", sub: "Копировать", onClick: combo([0x11, 0x43]) },
+            { label: "Ctrl + V", sub: "Вставить", onClick: combo([0x11, 0x56]) },
+            { label: "Ctrl + Alt + Del", onClick: combo([0x11, 0x12, 0x2E]) },
+        ])
     }
 
     async exitFullscreen() {
@@ -783,7 +905,7 @@ class ViewerApp implements Component {
             // We're fully immersed -> remove sidebar
             setSidebar(null)
         } else {
-            setSidebar(this.sidebar)
+            setSidebar(null)
         }
     }
 
@@ -829,7 +951,9 @@ class ViewerApp implements Component {
         const cursor = this.stream.getInput().getLocalCursorState()
 
         let offset = this.getVideoCenterOffset(visibleTop, visibleBottom)
-        if (cursor.visible) {
+        // PrimSec: картинка ездит за курсором только при открытой клавиатуре
+        // (иначе «двигаю курсор — двигается экран»).
+        if (cursor.visible && this.keyboardHeight > 0) {
             offset = this.getVideoOffsetWithCursor(cursor.y, streamRect.height, offset, visibleTop, visibleBottom)
         }
 

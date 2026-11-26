@@ -1,5 +1,5 @@
 import "./polyfill/index"
-import { Api, getApi, apiPostHost, FetchError, apiLogout, apiGetUser, tryLogin, apiGetHost, apiGetRole, apiPatchRole } from "./api"
+import { Api, getApi, apiPostHost, FetchError, apiLogout, apiGetUser, tryLogin, apiGetHost, apiGetApps, apiGetRole, apiPatchRole } from "./api"
 import { AddHostModal } from "./component/host/add_modal"
 import { HostList } from "./component/host/list"
 import { Component, ComponentEvent } from "./component/index"
@@ -21,6 +21,14 @@ let I = getTranslations(getCurrentLanguage())
 
 async function startApp() {
     setTouchContextMenuEnabled(true)
+
+    // PrimSec: быстрое подключение — сразу в картинку, без списка
+    // приложений (список — по ?apps=1, из меню трансляции).
+    const autoStart = !new URLSearchParams(location.search).has("apps")
+    if (autoStart) {
+        document.body.classList.add("ps-booting")
+        window.setTimeout(() => document.body.classList.remove("ps-booting"), 15000)
+    }
 
     const api = await getApi()
 
@@ -52,7 +60,7 @@ async function startApp() {
     // PrimSec: компьютер на мосту один — сразу его приложения.
     void lastAppState
     await app.forceFetch()
-    app.openOnlyHost()
+    await app.openOnlyHost(autoStart)
 }
 
 startApp()
@@ -470,8 +478,26 @@ class MainApp implements Component {
     }
 
     // PrimSec: открыть приложения единственного компьютера (без истории).
-    openOnlyHost() {
+    async openOnlyHost(autoStart: boolean = false) {
         const ids = this.hostList.getHostIds()
+        if (ids.length == 1 && autoStart) {
+            // Запущено что-то (игра) — к нему; иначе рабочий стол.
+            try {
+                const hostId = ids[0]
+                const host = await apiGetHost(this.api, { host_id: hostId })
+                const apps = await apiGetApps(this.api, { host_id: hostId })
+                const app = apps.find(a => host.current_game != 0 && a.app_id == host.current_game)
+                    ?? apps.find(a => a.title.toLowerCase() == "desktop")
+                    ?? apps[0]
+                if (app) {
+                    window.location.replace(buildUrl(`/stream.html?hostId=${hostId}&appId=${app.app_id}`))
+                    return
+                }
+            } catch {
+                // не вышло — покажем список приложений
+            }
+        }
+        document.body.classList.remove("ps-booting")
         if (ids.length == 1) {
             this.setCurrentDisplay("games", { hostId: ids[0] }, false)
             history.replaceState({ display: "games", hostId: ids[0] }, "")

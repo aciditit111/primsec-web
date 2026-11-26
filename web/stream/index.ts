@@ -618,6 +618,20 @@ export class Stream implements Component {
         return this.stats
     }
 
+    // PrimSec: строка для меню на телефоне — путь связи и задержка.
+    async psConnectionText(): Promise<string> {
+        const t = this.transport
+        if (!t) return "Подключаюсь…"
+        if (t.implementationName == "web_socket") return "Через сервер (запасной путь) — возможны задержки"
+        try {
+            const s = await t.getStats()
+            const rtt = typeof s.psRttMs == "number" ? ` · ${s.psRttMs} мс` : ""
+            if (s.psPath == "relay") return "Через сервер PrimSec" + rtt
+            if (s.psPath == "direct") return "Напрямую" + rtt
+        } catch { /* нет данных — не страшно */ }
+        return "Подключено"
+    }
+
     getStreamerSize(): [number, number] {
         return this.streamerSize
     }

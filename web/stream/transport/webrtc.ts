@@ -374,6 +374,15 @@ export class WebRTCTransport implements Transport {
         for (const [_key, value] of stats) {
             console.debug(value)
 
+            // PrimSec: выбранный путь и задержка (для меню на телефоне)
+            if ("type" in value && value.type == "candidate-pair" && (value as any).nominated && (value as any).state == "succeeded") {
+                const pair = value as any
+                if (typeof pair.currentRoundTripTime == "number") out.psRttMs = Math.round(pair.currentRoundTripTime * 1000)
+                const local = stats.get(pair.localCandidateId) as any
+                const remote = stats.get(pair.remoteCandidateId) as any
+                out.psPath = (local?.candidateType == "relay" || remote?.candidateType == "relay") ? "relay" : "direct"
+            }
+
             // Video Stream
             if ("type" in value && "kind" in value
                 && value.type == "inbound-rtp" && value.kind == "video"

@@ -1531,3 +1531,236 @@ body::before {
 .vpad-a { left: 8.75vmin; bottom: 0; }
 .vpad-x { left: 0; top: 8.75vmin; }
 .vpad-b { right: 0; top: 8.75vmin; }
+
+/* ---------- PrimSec: экран трансляции как у приложения ---------- */
+html.stream, body.stream {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    touch-action: none;
+    background: #000;
+    -webkit-user-select: none;
+    user-select: none;
+}
+body.stream::before { background: #000; }
+body.stream #sidebar-root { display: none !important; }
+
+.video-stream {
+    transform: translate(calc(-50% + var(--ps-pan-x, 0px)), calc(-50% + var(--ps-pan-y, 0px))) scale(var(--ps-zoom, 1));
+    transform-origin: 50% 50%;
+    transition: none !important;
+}
+
+.ps-btn {
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: 1px solid #2e3034;
+    background: #232428;
+    color: #f4f5f7;
+    font: 600 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    box-shadow: none;
+}
+.ps-btn-primary { background: #25abff; border-color: #25abff; color: #071521; }
+.ps-btn-ghost { background: transparent; }
+
+/* Заставка подключения */
+.ps-connect {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 24px;
+    background: radial-gradient(120% 80% at 100% 0%, rgba(37, 171, 255, 0.16), rgba(37, 171, 255, 0) 60%), #17181a;
+    color: #f4f5f7;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    opacity: 1;
+    transition: opacity 0.3s ease !important;
+}
+.ps-connect.ps-hide { opacity: 0; pointer-events: none; }
+.ps-connect[hidden] { display: none; }
+.ps-connect-logo { width: 72px; height: 72px; image-rendering: pixelated; border-radius: 18px; }
+.ps-connect-title { font-size: 22px; font-weight: 700; margin-top: 6px; }
+.ps-connect-step { font-size: 15px; color: #9a9ca1; max-width: 420px; min-height: 22px; }
+.ps-connect-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 12px; }
+.ps-connect-log {
+    max-width: min(640px, 92vw);
+    max-height: 30vh;
+    overflow: auto;
+    font-size: 11px;
+    color: #9a9ca1;
+    background: #121314;
+    border: 1px solid #2e3034;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: left;
+    white-space: pre-wrap;
+    -webkit-user-select: text;
+    user-select: text;
+}
+.ps-spinner {
+    width: 40px; height: 40px; margin-top: 8px; border-radius: 50%;
+    border: 3px solid rgba(37, 171, 255, 0.18); border-top-color: #25abff;
+    animation: ps-spin 0.9s linear infinite;
+}
+.ps-spinner[hidden] { display: none; }
+@keyframes ps-spin { to { transform: rotate(360deg); } }
+
+/* Плавающая кнопка */
+.ps-fab {
+    position: fixed;
+    z-index: 120;
+    width: 52px;
+    height: 52px;
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(244, 245, 247, 0.22);
+    background: rgba(23, 24, 26, 0.72);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    display: grid;
+    place-items: center;
+    opacity: 0.55;
+    touch-action: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45) !important;
+    transition: opacity 0.2s ease !important;
+}
+.ps-fab img { width: 30px; height: 30px; image-rendering: pixelated; pointer-events: none; }
+.ps-fab.open, .ps-fab.drag, .ps-fab:active { opacity: 1; }
+.ps-fab:hover:not(:disabled) { transform: none; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45) !important; background: rgba(23, 24, 26, 0.8); }
+
+/* Меню */
+.ps-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: rgba(0, 0, 0, 0.45);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.ps-menu[hidden] { display: none; }
+.ps-menu-status {
+    color: #f4f5f7;
+    background: rgba(23, 24, 26, 0.9);
+    border: 1px solid #2e3034;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px;
+}
+.ps-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 84px);
+    gap: 10px;
+    padding: 14px;
+    background: rgba(23, 24, 26, 0.94);
+    border: 1px solid #2e3034;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+.ps-menu-item {
+    margin: 0;
+    padding: 10px 4px 8px;
+    min-height: 78px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    background: #1d1e21;
+    color: #f4f5f7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    box-shadow: none !important;
+}
+.ps-menu-item:hover:not(:disabled) { transform: none; background: #26282c; border-color: transparent; }
+.ps-menu-item.on { background: rgba(37, 171, 255, 0.18); border-color: rgba(37, 171, 255, 0.6); }
+.ps-menu-item.ps-danger { color: #ff6b6b; }
+.ps-menu-icon { width: 26px; height: 26px; display: block; }
+.ps-menu-icon svg { width: 26px; height: 26px; }
+.ps-menu-label { font-size: 12px; line-height: 1.15; }
+@media (max-height: 360px) {
+    .ps-menu-grid { grid-template-columns: repeat(8, 76px); }
+}
+
+/* Вторичное меню */
+.ps-sheet {
+    position: fixed;
+    z-index: 130;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(440px, 92vw);
+    max-height: 88vh;
+    overflow: auto;
+    background: #1d1e21;
+    border: 1px solid #2e3034;
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+    color: #f4f5f7;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.ps-sheet[hidden] { display: none; }
+.ps-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; }
+.ps-sheet-title { font-weight: 700; font-size: 17px; }
+.ps-sheet-close { margin: 0; min-height: 34px; padding: 0 12px; font-size: 14px; border-radius: 10px; }
+.ps-sheet-list { display: grid; gap: 6px; padding: 6px 10px 12px; }
+.ps-sheet-item {
+    margin: 0;
+    text-align: left;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: #232428;
+    display: grid;
+    gap: 2px;
+    box-shadow: none !important;
+}
+.ps-sheet-item:hover:not(:disabled) { transform: none; border-color: transparent; background: #2b2d31; }
+.ps-sheet-item.on { border-color: #25abff; background: rgba(37, 171, 255, 0.14); }
+.ps-sheet-label { font-weight: 600; font-size: 15px; color: #f4f5f7; }
+.ps-sheet-sub { font-size: 12.5px; color: #9a9ca1; }
+
+/* Подсказка про жесты */
+.ps-hint {
+    position: fixed;
+    z-index: 150;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(420px, 90vw);
+    padding: 18px;
+    display: grid;
+    gap: 8px;
+    background: rgba(23, 24, 26, 0.96);
+    border: 1px solid #2e3034;
+    border-radius: 18px;
+    color: #9a9ca1;
+    font: 14px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.ps-hint b { color: #f4f5f7; font-weight: 600; }
+.ps-hint-title { color: #f4f5f7; font-weight: 700; font-size: 17px; margin-bottom: 4px; }
+.ps-hint .ps-btn { margin-top: 8px; justify-self: center; min-width: 160px; }
+
+/* Список приложений: пока решаем, куда подключиться — заставка */
+body.ps-booting #root { visibility: hidden; }
+body.ps-booting::after {
+    content: "Подключаюсь…";
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #9a9ca1;
+    font: 600 17px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
