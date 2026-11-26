@@ -1251,18 +1251,13 @@ class SendKeycodeModal extends FormModal<number> {
 }
 
 function exitStreamPage() {
-    if (window.matchMedia('(display-mode: standalone)').matches && history.length > 1) {
+    // PrimSec: назад к приложениям компьютера (закрывать вкладку
+    // нельзя: в приложении с экрана «Домой» и Safari это тупик).
+    if (history.length > 1) {
         history.back()
+        window.setTimeout(() => window.location.replace(buildUrl("/")), 800)
     } else {
-        window.close()
-
-        // Browsers may refuse to close a tab opened directly by the user.
-        // In that case, return to the app list instead of leaving a dead viewer.
-        window.setTimeout(() => {
-            if (!window.closed) {
-                window.location.replace(buildUrl("/"))
-            }
-        }, 0)
+        window.location.replace(buildUrl("/"))
     }
 }
 
