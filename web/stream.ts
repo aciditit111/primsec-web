@@ -21,6 +21,7 @@ import { LogLevel, uniffiInitAsync, Logger as UniffiLogger, setLogger as uniffiS
 import { NativeScreenKeyboard } from "./keyboard/native_keyboard"
 import { SimulatedKeyboard } from "./keyboard/simulated_keyboard"
 import { buildUrl } from "./config_"
+import { VirtualGamepad } from "./stream/virtual_gamepad"
 
 let I = getTranslations(getCurrentLanguage())
 
@@ -169,6 +170,8 @@ class ViewerApp implements Component {
     private statsDiv = document.createElement("div")
     private localTouchCursorDiv = document.createElement("div")
     private stream: Stream
+    // PrimSec: экранный геймпад
+    private virtualPad: VirtualGamepad = new VirtualGamepad(() => this.stream.getInput())
 
     private inputConfig: StreamInputConfig = defaultStreamInputConfig()
     private previousMouseMode: MouseMode
@@ -229,6 +232,7 @@ class ViewerApp implements Component {
         }, 100)
         this.div.appendChild(this.statsDiv)
         this.div.appendChild(this.localTouchCursorDiv)
+        this.div.appendChild(this.virtualPad.getElement())
 
         // Configure Screen Keyboard
         if (likelyHasNativeOnScreenKeyboard()) {
@@ -336,20 +340,21 @@ class ViewerApp implements Component {
         if (data.type == "app") {
             const appName = data.appName
 
-            document.title = `Stream: ${appName}`
+            document.title = `PrimSec: ${appName}`
         } else if (data.type == "connectionComplete") {
             this.sidebar.onCapabilitiesChange(data.capabilities)
+            this.virtualPad.onStreamStart()
 
             this.armFullscreenOnNextInteraction()
         } else if (data.type == "streamEnded") {
             if (data.graceful) {
-                await showMessage(data.message ?? "The stream was gracefully closed!")
+                await showMessage(data.message ?? "Трансляция завершена")
 
                 exitStreamPage()
             } else {
                 // This dispatches a log line as fatal
                 const event: InfoEvent = new CustomEvent("stream-info", {
-                    detail: { type: "addDebugLine", line: data.message ?? "The stream closed with an ungracefully!", additional: { type: "fatal" } }
+                    detail: { type: "addDebugLine", line: data.message ?? "Связь с компьютером оборвалась", additional: { type: "fatal" } }
                 })
                 this.connectionInfoModal.onInfo(event)
             }
@@ -671,6 +676,10 @@ class ViewerApp implements Component {
             console.warn("root element not found")
         }
     }
+    getVirtualPad(): VirtualGamepad {
+        return this.virtualPad
+    }
+
     async exitFullscreen() {
         if ("keyboard" in navigator && navigator.keyboard && "unlock" in navigator.keyboard) {
             await navigator.keyboard.unlock()
@@ -1026,6 +1035,7 @@ class ViewerSidebar implements Component, Sidebar, ScreenKeyboardListener {
     private fullscreenButton = document.createElement("button")
 
     private statsButton = document.createElement("button")
+    private padButton = document.createElement("button")
     private exitStreamButton = document.createElement("button")
 
     private mouseMode: SelectComponent
@@ -1080,6 +1090,16 @@ class ViewerSidebar implements Component, Sidebar, ScreenKeyboardListener {
             }
         })
         this.buttonDiv.appendChild(this.fullscreenButton)
+
+        // PrimSec: экранный геймпад
+        this.padButton.innerText = "Геймпад"
+        this.padButton.addEventListener("click", () => {
+            const pad = this.app.getVirtualPad()
+            pad.setVisible(!pad.isVisible())
+            this.padButton.classList.toggle("active", pad.isVisible())
+            setSidebarExtended(false)
+        })
+        this.buttonDiv.appendChild(this.padButton)
 
         // Stats
         this.statsButton.innerText = I.stream.stats

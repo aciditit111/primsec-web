@@ -52,21 +52,21 @@ export default {
             template: './web/index.html',
             chunks: ['index'],
             scriptLoading: 'blocking',
-            favicon: "./web/resources/moonlight.svg"
+            favicon: "./web/resources/primsec.png"
         }),
         new HtmlWebpackPlugin({
             filename: 'stream.html',
             template: './web/stream.html',
             chunks: ['stream'],
             scriptLoading: 'blocking',
-            favicon: "./web/resources/moonlight.svg"
+            favicon: "./web/resources/primsec.png"
         }),
         new HtmlWebpackPlugin({
             filename: 'admin.html',
             template: './web/admin.html',
             chunks: ['admin'],
             scriptLoading: 'blocking',
-            favicon: "./web/resources/moonlight.svg"
+            favicon: "./web/resources/primsec.png"
         }),
         new CopyPlugin({
             patterns: [
@@ -74,6 +74,8 @@ export default {
                     from: "./web/manifest.json",
                     to: "manifest.json"
                 },
+                { from: "./web/resources/primsec-180.png", to: "resources/primsec-180.png" },
+                { from: "./web/resources/primsec-192.png", to: "resources/primsec-192.png" },
             ],
         }),
     ],

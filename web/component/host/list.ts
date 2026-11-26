@@ -63,6 +63,11 @@ export class HostList extends FetchListComponent<DetailedHost | UndetailedHost, 
         this.removeList(listIndex)
     }
 
+    // PrimSec: на мосту один компьютер — этот.
+    getHostIds(): number[] {
+        return this.list.get().map(host => host.getHostId())
+    }
+
     getHost(hostId: number): Host | undefined {
         return this.list.get().find(host => host.getHostId() == hostId)
     }

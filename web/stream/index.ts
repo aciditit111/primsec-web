@@ -186,8 +186,8 @@ export class Stream implements Component {
             return
         }
         this.debugLog(shutdownReason == "failed"
-            ? "The stream connection was lost"
-            : "Tried all configured transport options but no connection was possible", { type: "fatal" })
+            ? "Связь с компьютером потеряна"
+            : "Не удалось соединиться с компьютером. Проверь интернет и попробуй ещё раз.", { type: "fatal" })
     }
 
     private transport: Transport | null = null
@@ -371,7 +371,7 @@ export class Stream implements Component {
         this.input.onStreamStart(connectData.capabilities, [connectData.videoSetup.width, connectData.videoSetup.height])
 
         if (this.settings.microphone && !connectData.microphoneType) {
-            const micUnsupportedMessage = "Microphone is not supported by the host or the data transport option"
+            const micUnsupportedMessage = "Микрофон здесь не поддерживается"
             this.logger.debug(micUnsupportedMessage)
             showNotification(micUnsupportedMessage)
         }
@@ -581,7 +581,7 @@ export class Stream implements Component {
 
                 let message = null
                 if (graceful) {
-                    message = "The host ended the stream gracefully."
+                    message = "Компьютер завершил трансляцию"
                 } else {
                     message = `The host ended the stream (code 0x${reason.inner[0].toString(16)})`
                 }

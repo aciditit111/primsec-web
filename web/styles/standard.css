@@ -1,14 +1,14 @@
 :root {
     /* Colors - Dark Theme */
-    --bg-0: #000f1f;
-    --bg-1: #001a2e;
-    --bg-2: #000d18;
-    --bg-3: #001a2e;
-    --text-1: #a8e6ff;
+    --bg-0: #17181a;
+    --bg-1: #1d1e21;
+    --bg-2: #121314;
+    --bg-3: #232428;
+    --text-1: #f4f5f7;
     --text-2: #ffffff;
-    --accent-cyan: #00a3cc;
-    --accent-cyan-2: #00d4ff;
-    --accent-cyan-light: #00ffff;
+    --accent-cyan: #25abff;
+    --accent-cyan-2: #25abff;
+    --accent-cyan-light: #7fcfff;
     --muted: rgba(255, 255, 255, 0.06);
     --error: #ff8c42;
     --error-light: #ffb399;
@@ -34,9 +34,9 @@
     --shadow-1: 0 4px 12px rgba(0, 0, 0, 0.6);
     --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.7);
     --shadow-3: 0 12px 36px rgba(0, 0, 0, 0.8);
-    --shadow-button: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 18px rgba(0, 212, 255, 0.12);
-    --glow-cyan: 0 0 20px rgba(0, 163, 204, 0.18);
-    --glow-cyan-bright: 0 0 30px rgba(0, 212, 255, 0.3), 0 0 60px rgba(0, 212, 255, 0.15);
+    --shadow-button: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 18px rgba(37, 171, 255, 0.12);
+    --glow-cyan: 0 0 20px rgba(37, 171, 255, 0.18);
+    --glow-cyan-bright: 0 0 30px rgba(37, 171, 255, 0.3), 0 0 60px rgba(37, 171, 255, 0.15);
 
     /* Animation durations */
     --dur-fast: 0.18s;
@@ -53,7 +53,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     transition: background-color var(--dur-med) ease, color var(--dur-med) ease;
     color: #ffffff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    text-shadow: none;
     min-height: 100vh;
 }
 
@@ -136,7 +136,7 @@ button {
     background-size: 60px;
     background-position: center;
     background-repeat: no-repeat;
-    border: 2px solid #00d4ff;
+    border: 2px solid #25abff;
     border-radius: var(--radius-md);
     padding: var(--space-sm);
     margin: var(--space-sm);
@@ -152,7 +152,7 @@ button {
 .file-button:hover:not(:disabled),
 button:hover:not(:disabled) {
     transition: all var(--dur-med) ease;
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.6), 0 0 60px rgba(0, 212, 255, 0.4);
+    box-shadow: 0 0 30px rgba(37, 171, 255, 0.6), 0 0 60px rgba(37, 171, 255, 0.4);
     transform: translateY(-3px) scale(1.05);
     background-color: #0052a3;
     border-color: var(--accent-cyan-light);
@@ -170,7 +170,7 @@ button,
 .admin-button,
 .sidebar-button,
 .user-button {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 18px rgba(0, 212, 255, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 18px rgba(37, 171, 255, 0.12);
 }
 
 /* Disable all fancy effects when the button is disabled */
@@ -186,19 +186,19 @@ input[type="checkbox"] {
     vertical-align: middle;
     width: 24px;
     height: 24px;
-    border: 2px solid #00d4ff;
+    border: 2px solid #25abff;
     border-radius: 6px;
     cursor: pointer;
     position: relative;
     display: inline-block;
-    background: rgba(0, 30, 50, 0.8);
+    background: rgba(29, 30, 33, 0.8);
     transition: all 0.3s ease;
-    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3) inset;
+    box-shadow: 0 0 10px rgba(37, 171, 255, 0.3) inset;
 }
 
 input[type="checkbox"]:hover {
-    border-color: #00ffff;
-    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5) inset;
+    border-color: #7fcfff;
+    box-shadow: 0 0 15px rgba(37, 171, 255, 0.5) inset;
 }
 
 input[type="checkbox"]::after {
@@ -216,9 +216,9 @@ input[type="checkbox"]::after {
 
 input[type="checkbox"]:checked {
     /* box fill */
-    background: linear-gradient(135deg, #00a3cc 0%, #0080b3 100%);
-    border-color: #00ffff;
-    box-shadow: 0 0 15px rgba(0, 212, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.4);
+    background: linear-gradient(135deg, #25abff 0%, #0080b3 100%);
+    border-color: #7fcfff;
+    box-shadow: 0 0 15px rgba(37, 171, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.4);
 }
 
 input[type="checkbox"]:checked::after {
@@ -235,7 +235,7 @@ input[type="checkbox"]:disabled {
 
 /** Slider */
 input[type="range"] {
-    accent-color: #00f5ff;
+    accent-color: #7fcfff;
 
     width: 200px;
     height: 32px;
@@ -263,7 +263,7 @@ input[type=number] {
     color: #ffffff;
     font-size: 1.2rem;
     margin: 5px;
-    background-color: rgba(0, 30, 50, 0.7);
+    background-color: rgba(29, 30, 33, 0.7);
     border-radius: 8px;
     border: 1.5px solid #ffffff;
     /* multiline */
@@ -272,7 +272,7 @@ input[type=number] {
     white-space: pre-wrap;
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
-    box-shadow: 0 0 10px rgba(0, 212, 255, 0.2) inset;
+    box-shadow: 0 0 10px rgba(37, 171, 255, 0.2) inset;
 
     max-height: max-content;
 }
@@ -285,9 +285,9 @@ input[type=text]:hover:enabled,
 input[type=password]:hover:enabled,
 input[type="number"]:hover:enabled {
     transition: all 0.3s ease;
-    background-color: rgba(0, 50, 80, 0.9);
-    border-color: #00ffff;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3) inset;
+    background-color: rgba(35, 36, 40, 0.9);
+    border-color: #7fcfff;
+    box-shadow: 0 0 20px rgba(37, 171, 255, 0.3) inset;
 }
 
 textarea:disabled,
@@ -304,8 +304,8 @@ input[type=range]:disabled {
 }
 
 select option {
-    background-color: #001a2e;
-    color: #00f5ff;
+    background-color: #1d1e21;
+    color: #7fcfff;
 }
 
 /** Hide the number up down thingy on number inputs */
@@ -401,14 +401,14 @@ input[type=number] {
 .modal-content {
     position: relative;
     z-index: 5001;
-    background: linear-gradient(135deg, rgba(0, 30, 50, 0.95) 0%, rgba(0, 15, 30, 0.95) 100%);
+    background: linear-gradient(135deg, rgba(29, 30, 33, 0.95) 0%, rgba(18, 19, 20, 0.95) 100%);
     backdrop-filter: blur(15px);
     margin: 10% auto;
     padding: 20px;
-    border: 2px solid #00a3cc;
+    border: 2px solid #25abff;
     border-radius: 16px;
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3), 0 0 60px rgba(0, 212, 255, 0.15);
-    color: #a8e6ff;
+    box-shadow: 0 0 30px rgba(37, 171, 255, 0.3), 0 0 60px rgba(37, 171, 255, 0.15);
+    color: #9a9ca1;
     width: 80%;
     max-height: 60%;
     overflow-y: auto;
@@ -428,10 +428,10 @@ input[type=number] {
     position: fixed;
     z-index: 1;
     border-radius: 12px;
-    background: linear-gradient(135deg, rgba(0, 30, 50, 0.98) 0%, rgba(0, 15, 30, 0.98) 100%);
+    background: linear-gradient(135deg, rgba(29, 30, 33, 0.98) 0%, rgba(18, 19, 20, 0.98) 100%);
     backdrop-filter: blur(15px);
-    border: 2px solid #00a3cc;
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3), 0 0 60px rgba(0, 212, 255, 0.15);
+    border: 2px solid #25abff;
+    box-shadow: 0 0 30px rgba(37, 171, 255, 0.3), 0 0 60px rgba(37, 171, 255, 0.15);
     /** animation */
     scale: 1;
     opacity: 1;
@@ -452,15 +452,15 @@ input[type=number] {
     /** animation */
     transition: all 0.2s ease;
     background-color: rgba(255, 255, 255, 0);
-    color: #a8e6ff;
+    color: #9a9ca1;
 }
 
 .context-menu-element:hover {
     /** animation */
     transition: all 0.2s ease;
-    background: linear-gradient(135deg, rgba(0, 163, 204, 0.3) 0%, rgba(0, 212, 255, 0.2) 100%);
+    background: linear-gradient(135deg, rgba(37, 171, 255, 0.3) 0%, rgba(37, 171, 255, 0.2) 100%);
     transform: translateX(6px);
-    border-left: 3px solid #00ffff;
+    border-left: 3px solid #7fcfff;
     padding-left: 7px;
 }
 
@@ -605,14 +605,14 @@ input[type=number] {
 
 
 .sidebar-content {
-    background: linear-gradient(135deg, rgba(0, 30, 50, 0.95) 0%, rgba(0, 15, 30, 0.95) 100%);
+    background: linear-gradient(135deg, rgba(29, 30, 33, 0.95) 0%, rgba(18, 19, 20, 0.95) 100%);
     backdrop-filter: blur(15px);
     border-radius: 12px;
     padding: 10px 10px 10px 10px;
     display: flex;
     flex-direction: column;
-    border: 2px solid #00a3cc;
-    box-shadow: 0 0 25px rgba(0, 212, 255, 0.3), 0 0 50px rgba(0, 212, 255, 0.15);
+    border: 2px solid #25abff;
+    box-shadow: 0 0 25px rgba(37, 171, 255, 0.3), 0 0 50px rgba(37, 171, 255, 0.15);
 }
 
 /** Notification */
@@ -640,7 +640,7 @@ input[type=number] {
     padding-bottom: 0.2cm;
     margin-bottom: 0.5cm;
 
-    background: linear-gradient(135deg, rgba(0, 30, 50, 0.95) 0%, rgba(40, 20, 0, 0.95) 100%);
+    background: linear-gradient(135deg, rgba(29, 30, 33, 0.95) 0%, rgba(40, 20, 0, 0.95) 100%);
     backdrop-filter: blur(10px);
     border-radius: 8px;
     border-left: 4px solid #ff8c42;
@@ -689,8 +689,8 @@ input[type=number] {
     width: 50px;
     height: 50px;
     padding: var(--space-xs);
-    background: rgba(0, 212, 255, 0.1);
-    border: 2px solid rgba(0, 212, 255, 0.3);
+    background: rgba(37, 171, 255, 0.1);
+    border: 2px solid rgba(37, 171, 255, 0.3);
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -701,9 +701,9 @@ input[type=number] {
 }
 
 .theme-toggle:hover {
-    background: rgba(0, 212, 255, 0.2);
+    background: rgba(37, 171, 255, 0.2);
     border-color: var(--accent-cyan-2);
-    box-shadow: 0 0 16px rgba(0, 212, 255, 0.4);
+    box-shadow: 0 0 16px rgba(37, 171, 255, 0.4);
     transform: rotate(180deg) scale(1.1);
 }
 
@@ -716,8 +716,8 @@ input[type=number] {
 .host-search {
     width: 250px;
     padding: var(--space-sm) var(--space-md);
-    background: rgba(0, 30, 50, 0.7);
-    border: 2px solid rgba(0, 212, 255, 0.3);
+    background: rgba(29, 30, 33, 0.7);
+    border: 2px solid rgba(37, 171, 255, 0.3);
     border-radius: var(--radius-md);
     color: var(--text-1);
     font-size: 0.95rem;
@@ -726,12 +726,12 @@ input[type=number] {
 
 .host-search:focus {
     border-color: var(--accent-cyan-2);
-    background: rgba(0, 50, 80, 0.8);
-    box-shadow: 0 0 16px rgba(0, 212, 255, 0.3);
+    background: rgba(35, 36, 40, 0.8);
+    box-shadow: 0 0 16px rgba(37, 171, 255, 0.3);
 }
 
 .host-search::placeholder {
-    color: rgba(168, 230, 255, 0.5);
+    color: rgba(154, 156, 161, 0.5);
 }
 
 .host-highlight {
@@ -828,8 +828,8 @@ input[type=number] {
     padding: var(--space-xs);
     font-size: 0.8rem;
     border-radius: var(--radius-sm);
-    background: rgba(0, 212, 255, 0.15);
-    border: 1px solid rgba(0, 212, 255, 0.4);
+    background: rgba(37, 171, 255, 0.15);
+    border: 1px solid rgba(37, 171, 255, 0.4);
     color: var(--accent-cyan-2);
     cursor: pointer;
     transition: all var(--dur-fast) ease;
@@ -839,9 +839,9 @@ input[type=number] {
 }
 
 .host-action-button:hover {
-    background: rgba(0, 212, 255, 0.3);
+    background: rgba(37, 171, 255, 0.3);
     border-color: var(--accent-cyan-2);
-    box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+    box-shadow: 0 0 12px rgba(37, 171, 255, 0.4);
 }
 
 .host-action-button.danger {
@@ -875,7 +875,7 @@ input[type=number] {
     min-width: 280px;
     max-width: 400px;
     padding: var(--space-md) var(--space-lg);
-    background: linear-gradient(135deg, rgba(0, 30, 50, 0.95) 0%, rgba(0, 15, 30, 0.95) 100%);
+    background: linear-gradient(135deg, rgba(29, 30, 33, 0.95) 0%, rgba(18, 19, 20, 0.95) 100%);
     border: 2px solid var(--accent-cyan);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-2), var(--glow-cyan-bright);
@@ -968,9 +968,9 @@ input[type=number] {
     cursor: pointer;
     margin: var(--space-sm);
     padding: var(--space-md) var(--space-md);
-    border: 2px solid rgba(0, 212, 255, 0.25);
+    border: 2px solid rgba(37, 171, 255, 0.25);
     border-radius: var(--radius-md);
-    background: linear-gradient(135deg, rgba(0, 30, 50, 0.4) 0%, rgba(0, 15, 30, 0.4) 100%);
+    background: linear-gradient(135deg, rgba(29, 30, 33, 0.4) 0%, rgba(18, 19, 20, 0.4) 100%);
     box-shadow: var(--shadow-2), var(--glow-cyan);
     transition: transform var(--dur-med) ease, box-shadow var(--dur-med) ease, background-color var(--dur-med) ease, border-color var(--dur-med) ease;
     display: flex;
@@ -983,8 +983,8 @@ input[type=number] {
 .host-element:hover {
     transform: translateY(-6px);
     box-shadow: var(--shadow-3), var(--glow-cyan-bright);
-    background: linear-gradient(135deg, rgba(0, 50, 80, 0.6) 0%, rgba(0, 30, 60, 0.6) 100%);
-    border-color: rgba(0, 212, 255, 0.6);
+    background: linear-gradient(135deg, rgba(35, 36, 40, 0.6) 0%, rgba(0, 30, 60, 0.6) 100%);
+    border-color: rgba(37, 171, 255, 0.6);
 }
 
 .host-element:focus-visible {
@@ -1001,7 +1001,7 @@ input[type=number] {
 
 .host-element:hover .host-image {
     transform: scale(1.08);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 212, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 16px rgba(37, 171, 255, 0.4);
 }
 
 .host-name {
@@ -1101,7 +1101,7 @@ input[type=number] {
 
 .app-active .app-image {
     border-style: solid;
-    border-color: #00f5ff;
+    border-color: #7fcfff;
     border-width: 4px;
     border-radius: 4px;
     box-shadow: 0 0 20px rgba(0, 245, 255, 0.6);
@@ -1164,10 +1164,10 @@ input[type=number] {
     height: 28px;
     margin: -14px 0 0 -14px;
     border-radius: 50%;
-    border: 3px solid #00d4ff;
+    border: 3px solid #25abff;
     border-top-color: rgba(0, 0, 0, 0);
     animation: moonlight-spin 1s linear infinite;
-    box-shadow: 0 0 12px #00d4ff;
+    box-shadow: 0 0 12px #25abff;
 }
 
 /* Loading Overlay */
@@ -1189,7 +1189,7 @@ input[type=number] {
 .host-loading-spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid rgba(0, 212, 255, 0.2);
+    border: 3px solid rgba(37, 171, 255, 0.2);
     border-top-color: var(--accent-cyan-2);
     border-radius: 50%;
     animation: moonlight-spin 0.8s linear infinite;
@@ -1342,8 +1342,8 @@ canvas.video-stream {
     background: rgba(0, 13, 24, 0.98);
     backdrop-filter: blur(15px);
     border-radius: 12px;
-    border: 2px solid rgba(0, 163, 204, 0.4);
-    box-shadow: 0 0 25px rgba(0, 212, 255, 0.3), 0 0 50px rgba(0, 212, 255, 0.15);
+    border: 2px solid rgba(37, 171, 255, 0.4);
+    box-shadow: 0 0 25px rgba(37, 171, 255, 0.3), 0 0 50px rgba(37, 171, 255, 0.15);
 }
 
 .stream-keyboard-simulated.hidden {
@@ -1369,10 +1369,10 @@ canvas.video-stream {
     min-width: 0;
     margin: 3px;
     padding: 12px 4px;
-    background: #001a2e;
+    background: #1d1e21;
     /* Matches --bg-1 */
     color: var(--text-1);
-    border: 1px solid rgba(0, 163, 204, 0.3);
+    border: 1px solid rgba(37, 171, 255, 0.3);
     border-radius: 4px;
     box-shadow: none;
     font-size: 1rem;
@@ -1386,7 +1386,7 @@ canvas.video-stream {
 }
 
 .stream-keyboard-simulated-key:hover {
-    background: rgba(0, 212, 255, 0.18);
+    background: rgba(37, 171, 255, 0.18);
     border-color: var(--accent-cyan);
     box-shadow: none;
     transform: none;
@@ -1403,7 +1403,7 @@ canvas.video-stream {
     background: #003d52;
     color: var(--accent-cyan-2);
     border-color: var(--accent-cyan);
-    box-shadow: inset 0 0 8px rgba(0, 212, 255, 0.12);
+    box-shadow: inset 0 0 8px rgba(37, 171, 255, 0.12);
 }
 
 /* Prevent starting animation for elements */
@@ -1473,3 +1473,60 @@ canvas.video-stream {
 .role-info-delete {
     background-color: red;
 }
+/* ---------- PrimSec ---------- */
+body::before {
+    background: radial-gradient(120% 70% at 100% 0%, rgba(37, 171, 255, 0.16), rgba(37, 171, 255, 0) 60%), var(--bg-0);
+}
+
+/* Экранный геймпад */
+.vpad {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.vpad[hidden] { display: none; }
+.vpad *, .vpad *::before, .vpad *::after { transition: none !important; }
+.vpad-left, .vpad-right, .vpad-mid { position: absolute; pointer-events: none; }
+.vpad-left { left: calc(env(safe-area-inset-left) + 3vmin); bottom: calc(env(safe-area-inset-bottom) + 3vmin); width: 48vmin; height: 72vmin; }
+.vpad-right { right: calc(env(safe-area-inset-right) + 3vmin); bottom: calc(env(safe-area-inset-bottom) + 3vmin); width: 48vmin; height: 72vmin; }
+.vpad-mid { left: 50%; bottom: calc(env(safe-area-inset-bottom) + 4vmin); transform: translateX(-50%); display: flex; gap: 4vmin; }
+.vpad-btn, .vpad-stick {
+    pointer-events: auto;
+    position: absolute;
+    display: grid;
+    place-items: center;
+    color: rgba(244, 245, 247, 0.9);
+    background: rgba(29, 30, 33, 0.42);
+    border: 1.5px solid rgba(244, 245, 247, 0.28);
+    font-weight: 600;
+    font-size: 4.2vmin;
+    touch-action: none;
+}
+.vpad-btn.on, .vpad-stick.on { background: rgba(37, 171, 255, 0.55); border-color: rgba(37, 171, 255, 0.95); color: #071521; }
+.vpad-mid .vpad-btn { position: static; }
+.vpad-small { width: 10vmin; height: 7vmin; border-radius: 3.5vmin; font-size: 4vmin; }
+.vpad-trigger { top: 0; width: 18vmin; height: 8vmin; border-radius: 3vmin; }
+.vpad-bumper { top: 10vmin; width: 18vmin; height: 7vmin; border-radius: 3vmin; }
+.vpad-left .vpad-trigger, .vpad-left .vpad-bumper { left: 0; }
+.vpad-right .vpad-trigger, .vpad-right .vpad-bumper { right: 0; }
+.vpad-stick { width: 26vmin; height: 26vmin; border-radius: 50%; }
+.vpad-knob { width: 12vmin; height: 12vmin; border-radius: 50%; background: rgba(244, 245, 247, 0.55); pointer-events: none; }
+.vpad-left .vpad-stick { left: 0; top: 19vmin; }
+.vpad-right .vpad-stick { right: 21vmin; bottom: 0; }
+.vpad-dpad { position: absolute; left: 23vmin; bottom: 0; width: 24vmin; height: 24vmin; pointer-events: none; }
+.vpad-dpad .vpad-btn { width: 8.5vmin; height: 8.5vmin; border-radius: 2vmin; font-size: 3.4vmin; }
+.vpad-up { left: 7.75vmin; top: 0; }
+.vpad-down { left: 7.75vmin; bottom: 0; }
+.vpad-left-btn { left: 0; top: 7.75vmin; }
+.vpad-right-btn { right: 0; top: 7.75vmin; }
+.vpad-face { position: absolute; right: 0; top: 19vmin; width: 28vmin; height: 28vmin; pointer-events: none; }
+.vpad-face .vpad-btn { width: 10.5vmin; height: 10.5vmin; border-radius: 50%; }
+.vpad-y { left: 8.75vmin; top: 0; }
+.vpad-a { left: 8.75vmin; bottom: 0; }
+.vpad-x { left: 0; top: 8.75vmin; }
+.vpad-b { right: 0; top: 8.75vmin; }

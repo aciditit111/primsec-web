@@ -1,9 +1,13 @@
 {
-  "name": "Moonlight Web",
-  "short_name": "Moonlight",
-  "start_url": "./",
+  "name": "PrimSec",
+  "short_name": "PrimSec",
+  "lang": "ru",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#303030",
-  "theme_color": "#000000",
-  "icons": []
+  "background_color": "#17181a",
+  "theme_color": "#17181a",
+  "icons": [
+    { "src": "resources/primsec-192.png", "sizes": "192x192", "type": "image/png" }
+  ]
 }

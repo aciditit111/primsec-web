@@ -1,5 +1,5 @@
 import { Component, ComponentEvent } from "../index"
-import { Api, apiGetAppImage, apiHostCancel } from "../../api"
+import { Api, apiGetAppImage } from "../../api"
 import { App } from "../../api_bindings"
 import { getCurrentLanguage, getTranslations } from "../../i18n"
 import { setContextMenu } from "../context_menu"
@@ -94,37 +94,12 @@ export class Game implements Component {
 
     private async onClick(event: MouseEvent) {
         const i = getTranslations(getCurrentLanguage()).game
-        if (this.cache.activeApp != null) {
-            const elements = []
-
-            if (this.isActive()) {
-                elements.push({
-                    name: i.resumeSession,
-                    callback: async () => {
-                        this.startStream()
-
-                        const event = new ComponentEvent("ml-gamereload", this)
-                        this.divElement.dispatchEvent(event)
-                    }
-                })
-            }
-
-            elements.push({
-                name: i.stopCurrentSession,
-                callback: async () => {
-                    const response = await apiHostCancel(this.api, { host_id: this.hostId })
-                    if (!response.success) {
-                        await showMessage(i.failedToCloseApp)
-                    }
-
-                    const event = new ComponentEvent("ml-gamereload", this)
-                    this.divElement.dispatchEvent(event)
-                }
-            })
-
-            setContextMenu(event, {
-                elements
-            })
+        // PrimSec: без меню. Запущено это же — просто входим (вместе с
+        // остальными гостями). Запущено другое — сказать, что выбрать.
+        if (this.cache.activeApp != null && !this.isActive()) {
+            await showMessage("На компьютере сейчас открыто другое. Выбери то, что подсвечено.")
+        } else if (this.isActive()) {
+            this.startStream()
         } else {
             this.startStream()
 
@@ -140,13 +115,8 @@ export class Game implements Component {
             appId: this.getAppId(),
         } as any)
 
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            // If we're in a pwa: open in the current tab
-            // If we don't do this we might get a url bar at the top
-            window.location.href = buildUrl(`/stream.html?${query}`)
-        } else {
-            window.open(buildUrl(`/stream.html?${query}`), "_blank")
-        }
+        // PrimSec: всегда в этой же вкладке (и в приложении с экрана «Домой»).
+        window.location.href = buildUrl(`/stream.html?${query}`)
     }
 
     private onContextMenu(event: MouseEvent) {

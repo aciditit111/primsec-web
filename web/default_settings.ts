@@ -21,14 +21,16 @@ const trueDefaultSettings: Settings =
     "canvasRenderer": false,
     // Canvas only: when true, draw only on requestAnimationFrame (stable, may add ~0–17 ms). When false, draw on frame submit (low latency).
     "canvasVsync": false,
-    "playAudioLocal": false,
+    // PrimSec: звук остаётся и на компьютере (как у гостей с компьютеров)
+    "playAudioLocal": true,
     "microphone": false,
     // possible values: "highres", "normal"
     "mouseScrollMode": "highres",
     // possible values: "relative", "follow", "pointAndDrag"
     "mouseMode": "follow",
     // possible values: "touch", "mouseRelative", "localCursor", "pointAndDrag"
-    "touchMode": "mouseRelative",
+    // PrimSec: тачпад со своим курсором — движок приёма не рисует курсор в видео
+    "touchMode": "localCursor",
     "localCursorSensitivity": 1,
     "controllerConfig": {
         "invertAB": false,
@@ -38,7 +40,7 @@ const trueDefaultSettings: Settings =
     },
     // possible values: "auto", "webrtc", "websocket"
     "dataTransport": "auto",
-    "language": "en",
+    "language": "ru-RU",
     "enterFullscreenOnStreamStart": false,
     "toggleFullscreenWithKeybind": false,
     // possible values: "standard", "old"

@@ -3,8 +3,9 @@ import { zhCN } from "./locales/zh-CN"
 import { ptBR } from "./locales/pt-BR"
 import { frFr } from "./locales/fr-FR"
 import { koKR } from "./locales/ko-KR"
+import { ruRU } from "./locales/ru-RU"
 
-export type Language = "en" | "zh-CN" | "pt-BR" | "fr-FR" | "ko-KR"
+export type Language = "ru-RU" | "en" | "zh-CN" | "pt-BR" | "fr-FR" | "ko-KR"
 
 // Translations is defined in locales/en.ts (the canonical locale).
 // Adding a new locale requires: (1) create web/locales/<code>.ts implementing
@@ -12,6 +13,7 @@ export type Language = "en" | "zh-CN" | "pt-BR" | "fr-FR" | "ko-KR"
 export type { Translations }
 
 const locales: Record<Language, Translations> = {
+    "ru-RU": ruRU,
     "en": en,
     "zh-CN": zhCN,
     "pt-BR": ptBR,
@@ -33,7 +35,11 @@ export function normalizeLanguage(language: unknown): Language {
     if (language === "ko" || language === "ko-KR" || language === "ko_KR") {
         return "ko-KR"
     }
-    return "en"
+    if (language === "en") {
+        return "en"
+    }
+    // PrimSec: русский по умолчанию.
+    return "ru-RU"
 }
 
 function getStoredSettings(): Record<string, unknown> | null {
@@ -76,6 +82,7 @@ export function adoptRoleDefaultLanguage(roleDefaultSettings: { language?: unkno
 
 export function getLanguageOptions(): Array<{ value: Language, name: string }> {
     return [
+        { value: "ru-RU", name: "Русский" },
         { value: "en", name: "English" },
         { value: "zh-CN", name: "中文" },
         { value: "pt-BR", name: "Português (Brasil)" },

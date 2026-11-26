@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" class="stream notranslate">
+<html lang="ru" class="stream notranslate">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="google" content="notranslate" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widgets=overlays-content" />
-    <title>Stream</title>
-    <link rel="icon" href="resources/moonlight.svg" sizes="any" type="image/svg+xml">
+    <title>PrimSec</title>
+    <link rel="apple-touch-icon" href="resources/primsec-180.png">
+    <meta name="theme-color" content="#17181a">
 
     <script src="./config.js"></script>
 
@@ -17,7 +18,7 @@
             const parsed = raw ? JSON.parse(raw) : null;
             const language = parsed && (parsed.language === "zh-CN" || parsed.language === "zh" || parsed.language === "zh_CN")
                 ? "zh-CN"
-                : "en";
+                : "ru";
             document.documentElement.lang = language;
             document.documentElement.translate = false;
             document.documentElement.classList.add("notranslate");

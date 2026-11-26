@@ -49,11 +49,10 @@ async function startApp() {
         app.setAppState(event.state, false)
     })
 
-    app.forceFetch()
-
-    if (lastAppState) {
-        app.setAppState(lastAppState)
-    }
+    // PrimSec: компьютер на мосту один — сразу его приложения.
+    void lastAppState
+    await app.forceFetch()
+    app.openOnlyHost()
 }
 
 startApp()
@@ -115,7 +114,7 @@ class MainApp implements Component {
         // Top Line
         this.topLine.classList.add("top-line")
 
-        this.moonlightTextElement.innerHTML = I.index.appTitle
+        this.moonlightTextElement.innerText = I.index.appTitle
         this.topLine.appendChild(this.moonlightTextElement)
 
         this.topLine.appendChild(this.topLineActions)
@@ -146,7 +145,14 @@ class MainApp implements Component {
         // Back button
         this.backButton.innerText = I.index.back
         this.backButton.classList.add("button-fit-content")
-        this.backButton.addEventListener("click", backAppState)
+        this.backButton.addEventListener("click", () => {
+            // PrimSec: из приложений — к списку компьютеров на сайте.
+            if (this.currentDisplay == "games") {
+                window.location.href = "/"
+            } else {
+                backAppState()
+            }
+        })
         this.backButton.dataset.variant = "back-button"
 
         // Host add button
@@ -349,6 +355,7 @@ class MainApp implements Component {
         // Mount the new display
         if (display == "hosts") {
             this.actionElement.appendChild(this.hostAddButton)
+            this.hostAddButton.hidden = true
             this.actionElement.appendChild(this.settingsButton)
 
             this.hostList.mount(this.divElement)
@@ -417,14 +424,8 @@ class MainApp implements Component {
             this.topLineActions.removeChild(this.adminButton)
         }
 
-        if (this.user.is_default_user) {
-            this.topLineActions.appendChild(this.loginButton)
-        } else {
-            this.topLineActions.appendChild(this.logoutButton)
-        }
-
+        // PrimSec: вход и выход — на сайте, здесь не показываем.
         if (this.user.role == "Admin") {
-            this.topLineActions.appendChild(this.adminButton)
             if (this.currentDisplay == "settings" && !this.actionElement.contains(this.saveRoleDefaultsButton)) {
                 this.actionElement.appendChild(this.saveRoleDefaultsButton)
             }
@@ -465,6 +466,17 @@ class MainApp implements Component {
             gameList?.setActiveGame(currentGame)
         } else {
             gameList?.setActiveGame(null)
+        }
+    }
+
+    // PrimSec: открыть приложения единственного компьютера (без истории).
+    openOnlyHost() {
+        const ids = this.hostList.getHostIds()
+        if (ids.length == 1) {
+            this.setCurrentDisplay("games", { hostId: ids[0] }, false)
+            history.replaceState({ display: "games", hostId: ids[0] }, "")
+        } else if (ids.length == 0) {
+            showNotification("Компьютер ещё настраивается. Попробуй через минуту.")
         }
     }
 
