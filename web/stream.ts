@@ -367,6 +367,8 @@ class ViewerApp implements Component {
             // PrimSec: итог — на своей заставке, с «Повторить» и «К компьютерам».
             if (data.graceful) {
                 this.connectOverlay.ended(data.message ?? "Компьютер завершил трансляцию")
+            } else if (this.autoReconnect()) {
+                this.connectOverlay.reconnecting()
             } else {
                 this.connectOverlay.fail(data.message ?? "Связь с компьютером оборвалась")
             }
@@ -691,6 +693,21 @@ class ViewerApp implements Component {
     }
     getVirtualPad(): VirtualGamepad {
         return this.virtualPad
+    }
+
+    // ---------- PrimSec: переподключение ----------
+    // Обрыв (мобильная сеть сменила вышку, телефон моргнул) — сами
+    // переподключаемся, до 3 раз за 5 минут; дальше — честная ошибка.
+    private autoReconnect(): boolean {
+        const now = Date.now()
+        let times: number[] = []
+        try { times = JSON.parse(sessionStorage.getItem("psRetries") || "[]") } catch { times = [] }
+        times = times.filter(t => now - t < 5 * 60 * 1000)
+        if (times.length >= 3) return false
+        times.push(now)
+        try { sessionStorage.setItem("psRetries", JSON.stringify(times)) } catch { /* */ }
+        window.setTimeout(() => location.reload(), 1500)
+        return true
     }
 
     // ---------- PrimSec: меню плавающей кнопки ----------

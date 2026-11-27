@@ -85,6 +85,16 @@ export class ConnectOverlay {
         }
     }
 
+    reconnecting() {
+        this.root.hidden = false
+        this.root.classList.remove("ps-hide")
+        this.done = false
+        this.spinner.hidden = false
+        this.actions.innerHTML = ""
+        this.title.textContent = "Связь прервалась"
+        this.step.textContent = "Переподключаюсь…"
+    }
+
     ended(message: string) {
         this.fail(message)
         this.title.textContent = "Трансляция завершена"
